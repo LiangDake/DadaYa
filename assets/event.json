@@ -1,0 +1,162 @@
+[
+  {
+    "id": "1",
+    "title": "React Native 工作坊",
+    "description": "学习 React Native 基础知识，构建你的第一个应用。",
+    "datetime": "2024-10-10T14:00:00",
+    "location": "西班牙巴塞罗那，Tech Hub",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Supabase 入门",
+    "description": "Supabase 入门指南，学习如何将其与应用集成。",
+    "datetime": "2024-10-11T16:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/2.jpg"
+  },
+  {
+    "id": "3",
+    "title": "使用 Supabase 构建 API",
+    "description": "学习如何使用 Supabase 创建强大的 API。",
+    "datetime": "2024-10-12T18:00:00",
+    "location": "美国纽约，123 Tech Street",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/3.jpg"
+  },
+  {
+    "id": "4",
+    "title": "高级 React Native UI",
+    "description": "深入学习 React Native 中的高级 UI 组件和动画。",
+    "datetime": "2024-10-13T10:00:00",
+    "location": "德国柏林，Innovation Center",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/4.jpg"
+  },
+  {
+    "id": "5",
+    "title": "应用中的 AI 集成",
+    "description": "探索如何将 AI 集成到你的移动应用中。",
+    "datetime": "2024-10-14T15:00:00",
+    "location": "英国伦敦，AI Labs",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/5.jpeg"
+  },
+  {
+    "id": "6",
+    "title": "Expo 入门",
+    "description": "开始使用 Expo，学习如何构建跨平台应用。",
+    "datetime": "2024-10-15T12:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/6.jpg"
+  },
+  {
+    "id": "7",
+    "title": "JavaScript 基础",
+    "description": "掌握 JavaScript 基础知识，用于 Web 和移动开发。",
+    "datetime": "2024-10-16T09:00:00",
+    "location": "西班牙马德里，Coders Arena",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/7.jpeg"
+  },
+  {
+    "id": "8",
+    "title": "掌握移动应用设计",
+    "description": "完整指南，设计美丽且易用的移动应用。",
+    "datetime": "2024-10-17T17:00:00",
+    "location": "法国巴黎，Design Studio",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/8.jpg"
+  },
+  {
+    "id": "9",
+    "title": "Firebase 与 Supabase 比较",
+    "description": "深入比较 Firebase 和 Supabase 在后台开发中的应用。",
+    "datetime": "2024-10-18T14:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/9.jpg"
+  },
+  {
+    "id": "10",
+    "title": "全栈 React Native 开发",
+    "description": "使用 React Native、Supabase 和 Node.js 构建全栈移动应用。",
+    "datetime": "2024-10-19T11:00:00",
+    "location": "美国洛杉矶，Tech School",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg"
+  },
+  {
+    "id": "11",
+    "title": "优化应用性能",
+    "description": "学习如何提高 React Native 应用的性能。",
+    "datetime": "2024-10-20T13:00:00",
+    "location": "美国旧金山，Dev Conference",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/2.jpg"
+  },
+  {
+    "id": "12",
+    "title": "React Navigation 深度解析",
+    "description": "深入了解 React Navigation 的内部工作原理以及如何实现复杂的导航。",
+    "datetime": "2024-10-21T16:00:00",
+    "location": "荷兰阿姆斯特丹，Tech Lab",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/3.jpg"
+  },
+  {
+    "id": "13",
+    "title": "React Native 中的 TypeScript",
+    "description": "使用 TypeScript 增强你的 React Native 代码，提升开发效率。",
+    "datetime": "2024-10-22T09:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/4.jpg"
+  },
+  {
+    "id": "14",
+    "title": "React Native 中的 GraphQL",
+    "description": "通过实践学习如何将 GraphQL 集成到 React Native 应用中。",
+    "datetime": "2024-10-23T12:00:00",
+    "location": "日本东京，Tech World",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/5.jpeg"
+  },
+  {
+    "id": "15",
+    "title": "React Native 中的状态管理",
+    "description": "全面了解如何使用 Redux 和 Context API 管理 React Native 中的状态。",
+    "datetime": "2024-10-24T10:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/6.jpg"
+  },
+  {
+    "id": "16",
+    "title": "React Native 应用测试",
+    "description": "React Native 应用测试和调试的最佳实践。",
+    "datetime": "2024-10-25T14:00:00",
+    "location": "澳大利亚悉尼，Developer Hub",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/7.jpeg"
+  },
+  {
+    "id": "17",
+    "title": "部署 React Native 应用",
+    "description": "学习如何将 React Native 应用部署到 App Store 和 Google Play。",
+    "datetime": "2024-10-26T11:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/8.jpg"
+  },
+  {
+    "id": "18",
+    "title": "管理应用发布",
+    "description": "分步讲解应用版本管理和发布。",
+    "datetime": "2024-10-27T13:00:00",
+    "location": "加拿大多伦多，Tech Conference",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/9.jpg"
+  },
+  {
+    "id": "19",
+    "title": "React Native 中的自定义组件",
+    "description": "学习如何为 React Native 项目构建可重用的自定义组件。",
+    "datetime": "2024-10-28T15:00:00",
+    "location": "爱尔兰都柏林，Dev Meetup",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg"
+  },
+  {
+    "id": "20",
+    "title": "构建跨平台应用",
+    "description": "学习如何使用 React Native 构建同时支持 iOS 和 Android 的应用。",
+    "datetime": "2024-10-29T16:00:00",
+    "location": "线上",
+    "image": "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/2.jpg"
+  }
+]
