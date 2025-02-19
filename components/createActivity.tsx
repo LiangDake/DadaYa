@@ -20,7 +20,6 @@ import { supabase } from '~/utils/supabase';
 import AddressAutocomplete from '~/components/AddressAutocomplete';
 import { uploadImageToSupabase } from '~/utils/ImageUpload';
 import { pickImage, takePhoto } from '~/components/ImagePicker'; // 引用图片上传工具
-import { RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 export default function CreateActivityScreen() {
   const navigation = useNavigation();
@@ -30,8 +29,12 @@ export default function CreateActivityScreen() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [editorContent, setEditorContent] = useState('');
-  const richText = useRef<RichEditor>(null);
+
+  const [location, setLocation] = useState('');
+  const [imageUri, setImageUri] = useState('');
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+
   const [startDate, setStartDate] = useState(() => {
     const now = new Date();
     // 如果当前时间的分钟已经大于0，调整到下一个整点
@@ -48,11 +51,6 @@ export default function CreateActivityScreen() {
     now.setHours(now.getHours() + 2); // 设定结束时间为当前时间的下两个小时的整点
     return now;
   });
-
-  const [location, setLocation] = useState('');
-  const [imageUri, setImageUri] = useState('');
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {

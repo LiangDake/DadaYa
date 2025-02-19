@@ -131,7 +131,7 @@ export default function IndexScreen() {
       )}
       {/* 圆形添加按钮 */}
       <Pressable
-        onPress={() => navigation.navigate('createActivity')} // 跳转到 createActivity.tsx
+        onPress={() => navigation.navigate('createActivity/index')} // 跳转到 createActivity.tsx
         className="absolute bottom-10 right-10 h-20 w-20 items-center justify-center rounded-full bg-red-500 shadow-lg">
         <Text className="text-6xl text-white">+</Text>
       </Pressable>

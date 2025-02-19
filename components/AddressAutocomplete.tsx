@@ -82,7 +82,7 @@ export default function AddressAutocomplete({ onSelected }) {
 
       {/* 集成地图 */}
       <MapView
-        style={{ height: 300, borderRadius: 10, marginTop: 20 }}
+        style={{ height: 400, borderRadius: 10, marginTop: 20 }}
         region={{
           latitude: latitude ?? defaultLatitude, // 如果 latitude 为 null 或 undefined 使用默认值
           longitude: longitude ?? defaultLongitude, // 如果 longitude 为 null 或 undefined 使用默认值

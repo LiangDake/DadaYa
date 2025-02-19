@@ -12,7 +12,7 @@ import {
 import { Link, useLocalSearchParams, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
 import MapView, { Marker } from 'react-native-maps';
-
+import RenderHtml from 'react-native-render-html';
 export default function ActivityDetailsScreen() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -167,7 +167,8 @@ export default function ActivityDetailsScreen() {
         <Link href={`/activity/${activity.id}/attendance`} className="text-lg" numberOfLines={2}>
           点击查看参与者
         </Link>
-        <Text className="mt-2 text-sm">活动介绍: {activity.description}</Text>
+        <Text className="text-gray-700">{`活动描述:`}</Text>
+        <RenderHtml contentWidth={1000} source={{ html: activity.description }} />
 
         {/* 点击活动地点跳转到地图 */}
         {latitude && longitude && (
@@ -179,7 +180,7 @@ export default function ActivityDetailsScreen() {
         {/* 集成地图 */}
         {latitude && longitude && (
           <MapView
-            style={{ height: 300, borderRadius: 10, marginTop: 20 }}
+            style={{ height: 200, borderRadius: 10, marginTop: 20 }}
             initialRegion={{
               latitude,
               longitude,
@@ -196,8 +197,10 @@ export default function ActivityDetailsScreen() {
       </ScrollView>
 
       {/* Footer 按钮 */}
-      <View className="absolute bottom-0 left-0 right-0 flex-row items-center justify-between border-t-2 border-gray-300 p-5 pb-10">
-        <Text className="text-xl font-semibold">免费</Text>
+      <View className="absolute bottom-0 left-0 right-0 flex-row items-center justify-between border-t-2 border-gray-300 bg-white p-5 pb-10">
+        <Text className="text-xl font-semibold">
+          {activity.price ? `${activity.price}元` : '免费'}
+        </Text>
 
         {isJoined ? (
           <Pressable className="rounded-md bg-gray-500 p-5 px-8" onPress={handleCancelActivity}>
