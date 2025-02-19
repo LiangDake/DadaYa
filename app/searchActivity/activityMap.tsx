@@ -55,7 +55,7 @@ export default function ActivityMapScreen() {
         const max_long = longitude + longitudeDelta / 2;
 
         // 调用 Supabase RPC 函数，获取当前视图区域内的活动
-        const { data, error } = await supabase.rpc('activities_in_view', {
+        const { data, error } = await supabase.rpc('coming_activities_in_view', {
           min_lat,
           min_long,
           max_lat,
@@ -80,7 +80,7 @@ export default function ActivityMapScreen() {
     const deltaLat = Math.abs(region.latitude - lastRegion.latitude);
     const deltaLong = Math.abs(region.longitude - lastRegion.longitude);
 
-    if (deltaLat > 0.03 || deltaLong > 0.03) {
+    if (deltaLat > 0.05 || deltaLong > 0.05) {
       fetchActivities();
       setLastRegion(region); // 更新 lastRegion
     }
@@ -108,7 +108,7 @@ export default function ActivityMapScreen() {
             latitude: activity.latitude,
             longitude: activity.longitude,
           }}>
-          <Callout style={{ width: 200 }}>
+          <Callout style={{ width: 200, height: 160 }}>
             <CalloutSubview
               style={{ flex: 1 }}
               onPress={() => {
@@ -116,12 +116,12 @@ export default function ActivityMapScreen() {
               }}>
               <Link href={`/activity/${activity.id}`} asChild>
                 <Pressable>
-                  <View className="mb-4 rounded-lg border p-4 shadow-md" style={{ width: 200 }}>
+                  <View className="mb-4 rounded-lg p-4 shadow-md" style={{ width: 200 }}>
                     <Image
                       source={{ uri: activity.image_uri }}
                       style={{ height: 80, width: '100%', borderRadius: 8 }}
                     />
-                    <Text style={{ fontSize: 16, fontWeight: '600', marginVertical: 4 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '600', marginVertical: 8 }}>
                       {activity.title}
                     </Text>
                     <Text style={{ fontSize: 12, color: '#888' }}>{formatDate(activity.date)}</Text>

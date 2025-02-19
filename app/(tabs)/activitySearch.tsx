@@ -1,11 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, Pressable, TextInput, SafeAreaView } from 'react-native';
-import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  SafeAreaView,
+  Pressable,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import * as Location from 'expo-location';
 import { fetchNearbyActivities } from '~/utils/FetchActivities';
 import { filterActivitiesByDate } from '~/utils/FilterActivitiesByDate';
+import ActivityList from '../searchActivity/activityList';
+import ActivityMap from '../searchActivity/activityMap';
 
-export default function ActivityListScreen() {
+export default function ActivitySearchScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [activities, setActivities] = useState<any[]>([]);
   const [filteredActivities, setFilteredActivities] = useState<any[]>([]);
@@ -13,8 +22,9 @@ export default function ActivityListScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const [filter, setFilter] = useState('upcoming'); // 默认筛选 "即将到来"
   const [searchQuery, setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
   const [status, requestPermission] = Location.useForegroundPermissions();
+
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list'); // 用于控制视图模式
 
   useEffect(() => {
     if (status && !status.granted && status.canAskAgain) {
@@ -26,7 +36,7 @@ export default function ActivityListScreen() {
     const getCurrentLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        setErrorMsg('请求获取用户位置失败');
         return;
       }
 
@@ -77,27 +87,6 @@ export default function ActivityListScreen() {
     setFilteredActivities(filteredData);
   }, [searchQuery, activities]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
-
-  const renderItem = ({ item }: { item: any }) => (
-    <Link href={`/activity/${item.id}`} asChild>
-      <Pressable>
-        <View className="mb-4 rounded-lg border p-4 shadow-md">
-          <Image source={{ uri: item.image_uri }} className="mb-4 h-40 w-full rounded-md" />
-          <Text className="text-xl font-semibold">{item.title}</Text>
-          <Text className="text-sm text-gray-500">{formatDate(item.date)}</Text>
-          <Text className="text-sm text-gray-500">{item.location}</Text>
-          <Text className="text-sm text-gray-700">
-            {item.attendee_count} 人已加入，距离你: {Math.round(item.dist_meters / 1000)} km
-          </Text>
-        </View>
-      </Pressable>
-    </Link>
-  );
-
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -116,7 +105,7 @@ export default function ActivityListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View className="flex-1 p-4">
+      <View style={{ flex: 0.14, paddingHorizontal: 16 }}>
         {/* 输入框：查找活动 */}
         <TextInput
           style={{
@@ -133,7 +122,7 @@ export default function ActivityListScreen() {
         />
 
         {/* 分类按钮 */}
-        <View className="mb-4 flex-row justify-between">
+        <View style={{ marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
           {['upcoming', 'today', 'tomorrow', 'weekend'].map((btnFilter) => (
             <Pressable
               key={btnFilter}
@@ -143,7 +132,7 @@ export default function ActivityListScreen() {
                 paddingVertical: 10,
                 paddingHorizontal: 20,
                 borderRadius: 20,
-                elevation: 3, // 增加立体效果
+                elevation: 3,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.2,
@@ -155,7 +144,7 @@ export default function ActivityListScreen() {
                   fontWeight: 'bold',
                 }}>
                 {btnFilter === 'upcoming'
-                  ? '即将到来'
+                  ? '为你推荐'
                   : btnFilter === 'today'
                     ? '今天'
                     : btnFilter === 'tomorrow'
@@ -165,14 +154,48 @@ export default function ActivityListScreen() {
             </Pressable>
           ))}
         </View>
+      </View>
+      <View style={{ flex: 1, paddingHorizontal: 0 }}>
+        {/* 根据当前视图模式渲染不同的组件 */}
+        {viewMode === 'list' ? (
+          <ActivityList activities={filteredActivities} onSelectActivity={() => {}} />
+        ) : (
+          <ActivityMap />
+        )}
+      </View>
 
-        {/* 活动列表 */}
-        <FlatList
-          data={filteredActivities}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-        />
+      {/* 底部切换视图按钮 */}
+      <View style={styles.toggleButtonContainer}>
+        <Pressable
+          onPress={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
+          style={styles.toggleButton}>
+          <Text style={styles.toggleButtonText}>
+            {viewMode === 'list' ? '活动地图' : '活动列表'}
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  toggleButtonContainer: {
+    position: 'absolute',
+    bottom: 10, // 距离底部一定距离
+    left: Dimensions.get('window').width / 2 - 60, // 计算出水平居中的位置
+    width: 120, // 适当设置宽度
+    alignItems: 'center',
+  },
+  toggleButton: {
+    backgroundColor: 'red',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    elevation: 3,
+  },
+  toggleButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});

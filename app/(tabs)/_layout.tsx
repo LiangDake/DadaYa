@@ -22,18 +22,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="activityList"
+        name="activitySearch"
         options={{
           title: '活动',
           tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-          headerShown: false, // 取消显示顶部标题
-        }}
-      />
-      <Tabs.Screen
-        name="activityMap"
-        options={{
-          title: '地图',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
           headerShown: false, // 取消显示顶部标题
         }}
       />
