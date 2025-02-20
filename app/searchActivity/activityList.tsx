@@ -36,7 +36,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onSelectActivit
             {item.attendee_count} 人已加入，距离你: {Math.round(item.dist_meters / 1000)} km
           </Text>
         </View>
-        <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: -16 }} />
+        <View style={{ height: 2, backgroundColor: '#e0e0e0', marginHorizontal: -16 }} />
       </Pressable>
     </Link>
   );

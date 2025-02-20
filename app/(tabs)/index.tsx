@@ -4,13 +4,13 @@ import {
   Text,
   Button,
   FlatList,
-  Image,
-  Pressable,
   ActivityIndicator,
   RefreshControl,
+  Pressable,
 } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
+import ActivityList from '../searchActivity/activityList';
 
 export default function IndexScreen() {
   const navigation = useNavigation();
@@ -18,6 +18,7 @@ export default function IndexScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activities, setActivities] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'upcoming' | 'completed'>('upcoming'); // 当前显示活动的类型
 
   // 获取用户及报名的活动
   const fetchUserAndActivities = async () => {
@@ -67,19 +68,28 @@ export default function IndexScreen() {
     fetchUserAndActivities();
   }, []);
 
-  // 处理登出
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    navigation.replace('(auth)/login');
-  };
-
   // 下拉刷新处理
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchUserAndActivities();
     setRefreshing(false);
   }, []);
+
+  // 切换显示类别
+  const handleTabChange = (tab: 'upcoming' | 'completed') => {
+    setActiveTab(tab);
+  };
+
+  // 根据活动日期过滤活动
+  const filteredActivities = activities.filter((activity) => {
+    const activityDate = new Date(activity.date);
+    const now = new Date();
+    if (activeTab === 'upcoming') {
+      return activityDate > now; // 只显示未来的活动
+    } else {
+      return activityDate <= now; // 只显示过去的活动
+    }
+  });
 
   if (loading) {
     return (
@@ -95,27 +105,25 @@ export default function IndexScreen() {
       {user ? (
         <>
           <Text className="mb-4 text-xl font-bold">欢迎回来，{user.email}</Text>
-          <Text className="mb-2 text-lg font-bold">您已报名的活动：</Text>
 
-          <FlatList
-            data={activities}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                className="mb-4 rounded-lg border p-4 shadow-md"
-                onPress={() => router.push(`/activity/${item.id}`)}>
-                <Image source={{ uri: item.image_uri }} className="mb-4 h-40 w-full rounded-md" />
-                <Text className="text-xl font-semibold">{item.title}</Text>
-                <Text className="text-sm text-gray-500">
-                  {new Date(item.date).toLocaleString()}
-                </Text>
-                <Text className="text-sm text-gray-500">{item.location}</Text>
-              </Pressable>
-            )}
-            ListEmptyComponent={
-              <Text className="mt-4 text-center text-gray-500">您还没有报名任何活动。</Text>
-            } // 为空时显示
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} // 确保支持下拉刷新
+          {/* 分类按钮 */}
+          <View className="mb-4 flex-row">
+            <Pressable
+              onPress={() => handleTabChange('upcoming')}
+              className={`mr-4 rounded p-2 ${activeTab === 'upcoming' ? 'bg-red-500 text-white' : 'bg-white text-black'}`}>
+              <Text>已报名的活动</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => handleTabChange('completed')}
+              className={`rounded p-2 ${activeTab === 'completed' ? 'bg-red-500 text-white' : 'bg-white text-black'}`}>
+              <Text>已完成的活动</Text>
+            </Pressable>
+          </View>
+
+          {/* 活动列表 */}
+          <ActivityList
+            activities={filteredActivities}
+            onSelectActivity={(id) => router.push(`/activity/${id}`)}
           />
         </>
       ) : (
