@@ -8,6 +8,8 @@ export const filterActivitiesByDate = (activities: any[], filter: string) => {
     const activityDate = new Date(activity.date);
 
     switch (filter) {
+      case 'passed':
+        return activityDate < now; // 确保是从现在之前的活动
       case 'upcoming':
         return activityDate >= now; // 确保是从现在开始以后的活动
       case 'today':

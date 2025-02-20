@@ -1,7 +1,8 @@
 // ActivityList.tsx
 import React from 'react';
-import { FlatList, View, Image, Text, Pressable } from 'react-native';
+import { FlatList, View, Image, Text, Pressable, Share } from 'react-native';
 import { Link } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface Activity {
   id: string;
@@ -17,7 +18,16 @@ interface ActivityListProps {
   activities: Activity[];
   onSelectActivity: (id: string) => void;
 }
-
+// 分享功能
+const handleShare = async (activity: any) => {
+  try {
+    await Share.share({
+      message: `Check out this activity: ${activity.title}\nDetails: ${activity.description}`,
+    });
+  } catch (error) {
+    console.error('Error sharing activity', error);
+  }
+};
 const ActivityList: React.FC<ActivityListProps> = ({ activities, onSelectActivity }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -32,6 +42,11 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onSelectActivit
           <Text className="text-xl font-semibold">{item.title}</Text>
           <Text className="text-sm text-gray-500">{formatDate(item.date)}</Text>
           <Text className="text-sm text-gray-500">{item.location}</Text>
+          <Pressable
+            onPress={() => handleShare(item)}
+            className="absolute right-5 top-5 rounded-full bg-gray-400 p-1">
+            <MaterialIcons name="upload" size={24} color="white" />
+          </Pressable>
           <Text className="text-sm text-gray-700">
             {item.attendee_count} 人已加入，距离你: {Math.round(item.dist_meters / 1000)} km
           </Text>
