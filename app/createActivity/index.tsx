@@ -80,32 +80,39 @@ export default function CreateActivityScreen() {
     setSaving(true);
     let imageUrl = '';
     if (imageUri) {
+      console.log(imageUri);
       imageUrl = await uploadImageToSupabase(imageUri);
+      console.log(imageUrl);
     }
     const [long, lat] = location.location.split(',').map(parseFloat);
 
-    const { error } = await supabase.from('activities').insert([
-      {
-        title,
-        description: description,
-        date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        location: location.address,
-        image_uri: imageUrl,
-        host_id: user.id,
-        longitude: long,
-        latitude: lat,
-        location_point: `POINT(${long} ${lat})`,
-      },
-    ]);
+    try {
+      const { error } = await supabase.from('activities').insert([
+        {
+          title,
+          description: description,
+          date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          location: location.address,
+          image_uri: imageUrl,
+          host_id: user.id,
+          longitude: long,
+          latitude: lat,
+          location_point: `POINT(${long} ${lat})`,
+        },
+      ]);
 
-    setSaving(false);
+      setSaving(false);
 
-    if (error) {
-      Alert.alert('创建失败', error.message);
-    } else {
-      Alert.alert('成功', '活动创建成功');
-      navigation.replace('(tabs)');
+      if (error) {
+        Alert.alert('创建失败', error.message);
+      } else {
+        Alert.alert('成功', '活动创建成功');
+        navigation.replace('(tabs)');
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      Alert.alert('创建失败', '发生意外错误');
     }
   };
 

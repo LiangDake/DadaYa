@@ -1,7 +1,7 @@
 // utils/ImagePickerUtil.tsx
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
-
+import * as ImageManipulator from 'expo-image-manipulator';
 export const pickImage = async (setImageUri: React.Dispatch<React.SetStateAction<string>>) => {
   // 请求相机权限
   const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
@@ -20,7 +20,14 @@ export const pickImage = async (setImageUri: React.Dispatch<React.SetStateAction
 
   // 确保用户选择了图片
   if (!result.canceled && result.assets?.length > 0) {
-    setImageUri(result.assets[0].uri); // 获取图片 URI
+    const uri = result.assets[0].uri;
+    // 压缩图片，调整质量或分辨率
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }], // 可选：调整图片大小（例如：宽度为800px）
+      { compress: 0.7 } // 压缩图片，0.7表示70%的质量
+    );
+    setImageUri(manipulatedImage.uri); // 更新图片 URI
   }
 };
 
