@@ -8,8 +8,9 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  FlatList,
 } from 'react-native';
-import { Link, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Link, router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
 import MapView, { Marker } from 'react-native-maps';
 import RenderHtml from 'react-native-render-html';
@@ -17,6 +18,8 @@ export default function ActivityDetailsScreen() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const [activity, setActivity] = useState<any>(null);
+  const [joinedUsers, setJoinedUsers] = useState<JoinedUser[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -58,6 +61,18 @@ export default function ActivityDetailsScreen() {
         const longitude = activityData.longitude;
         setLatitude(latitude);
         setLongitude(longitude);
+      }
+
+      // 获取报名成员信息（包括头像）
+      const { data: joinedData, error: joinedError } = await supabase
+        .from('attendance')
+        .select('user_id, profiles!attendance_user_id_fkey(avatar_url)')
+        .eq('activity_id', id);
+
+      if (joinedError) {
+        console.error('获取报名用户失败:', joinedError.message);
+      } else {
+        setJoinedUsers(joinedData);
       }
 
       // 检查用户是否已报名
@@ -163,22 +178,38 @@ export default function ActivityDetailsScreen() {
         <Text className="text-sm text-gray-500">
           {new Date(activity.date).toLocaleString()}至{new Date(activity.end_date).toLocaleString()}
         </Text>
-
-        <Link
-          href={`/activity/${activity.id}/attendance`}
-          className="mt-2 text-blue-500"
-          numberOfLines={2}>
-          点击查看参与者
-        </Link>
-        <RenderHtml contentWidth={1000} source={{ html: activity.description }} />
+        <ScrollView horizontal className="mt-4 flex-row">
+          {joinedUsers.map((user, index) =>
+            user.profiles.avatar_url ? (
+              <Pressable
+                key={user.user_id}
+                onPress={() => router.push(`/activity/${activity.id}/attendance`)}>
+                <Image
+                  source={{ uri: user.profiles.avatar_url }}
+                  className="h-12 w-12 rounded-full border-2 border-white"
+                  style={{
+                    marginLeft: index === 0 ? 0 : -10, // 负边距实现部分重叠
+                  }}
+                />
+              </Pressable>
+            ) : null
+          )}
+        </ScrollView>
         <Text></Text>
-        <Text>活动地点: </Text>
-        {/* 点击活动地点跳转到地图 */}
-        {latitude && longitude && (
-          <Pressable onPress={() => openMap(latitude, longitude)}>
-            <Text className="mt-2 text-blue-500">{activity.location}</Text>
-          </Pressable>
-        )}
+        <Text>{activity.description}</Text>
+
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <Text className="mt-2">活动地点·</Text>
+          {/* 点击活动地点跳转到地图 */}
+          {latitude && longitude && (
+            <Pressable onPress={() => openMap(latitude, longitude)}>
+              <Text className="mt-2 text-blue-500">{activity.location}</Text>
+            </Pressable>
+          )}
+        </View>
 
         {/* 集成地图 */}
         {latitude && longitude && (

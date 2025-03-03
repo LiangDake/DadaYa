@@ -12,9 +12,9 @@ import {
 import * as Location from 'expo-location';
 import { fetchNearbyActivities } from '~/utils/FetchActivities';
 import { filterActivitiesByDate } from '~/utils/FilterActivitiesByDate';
-import ActivityList from '../searchActivity/activityList';
-import ActivityMap from '../searchActivity/activityMap';
-
+import ActivityList from '../../components/activityList';
+import ActivityMap from '../../components/activityMap';
+import toggleButtonStyles from 'components/style/ButtonStyles'; // 引入样式文件
 export default function ActivitySearchScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [activities, setActivities] = useState<any[]>([]);
@@ -83,7 +83,6 @@ export default function ActivitySearchScreen() {
     // **1️⃣ 按时间筛选**
     if (filter === 'upcoming') {
       filteredData = activities.filter((activity) => new Date(activity.date) >= new Date());
-      console.log(filteredData);
     } else {
       filteredData = filterActivitiesByDate(activities, filter);
     }
@@ -97,9 +96,7 @@ export default function ActivitySearchScreen() {
 
     // **3️⃣ 按活动类型筛选**
     if (categoryFilter !== 'all') {
-      console.log(categoryFilter);
       filteredData = filteredData.filter((activity) => activity.type === categoryFilter);
-      console.log(filteredData);
     }
 
     // **更新最终筛选的活动列表**
@@ -182,7 +179,7 @@ export default function ActivitySearchScreen() {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: 'row' }}>
-            {['all', 'outdoor', 'drink', 'sport', 'art', 'movie'].map((btnFilter) => (
+            {['all', '户外', '畅饮', '运动', '艺术', '电影'].map((btnFilter) => (
               <Pressable
                 key={btnFilter}
                 onPress={() => setTypeFilter(btnFilter)}
@@ -200,13 +197,13 @@ export default function ActivitySearchScreen() {
                   }}>
                   {btnFilter === 'all'
                     ? '全部'
-                    : btnFilter === 'outdoor'
+                    : btnFilter === '户外'
                       ? '户外'
-                      : btnFilter === 'drink'
+                      : btnFilter === '畅饮'
                         ? '畅饮'
-                        : btnFilter === 'sport'
+                        : btnFilter === '运动'
                           ? '运动'
-                          : btnFilter === 'art'
+                          : btnFilter === '艺术'
                             ? '艺术'
                             : '电影'}
                 </Text>
@@ -225,11 +222,11 @@ export default function ActivitySearchScreen() {
       </View>
 
       {/* 底部切换视图按钮 */}
-      <View style={styles.toggleButtonContainer}>
+      <View style={toggleButtonStyles.toggleButtonContainer}>
         <Pressable
           onPress={() => setViewMode(viewMode === 'list' ? 'map' : 'list')}
-          style={styles.toggleButton}>
-          <Text style={styles.toggleButtonText}>
+          style={toggleButtonStyles.toggleButton}>
+          <Text style={toggleButtonStyles.toggleButtonText}>
             {viewMode === 'list' ? '活动地图' : '活动列表'}
           </Text>
         </Pressable>
@@ -237,25 +234,3 @@ export default function ActivitySearchScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  toggleButtonContainer: {
-    position: 'absolute',
-    bottom: 10, // 距离底部一定距离
-    left: Dimensions.get('window').width / 2 - 60, // 计算出水平居中的位置
-    width: 120, // 适当设置宽度
-    alignItems: 'center',
-  },
-  toggleButton: {
-    backgroundColor: 'red',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    elevation: 3,
-  },
-  toggleButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});

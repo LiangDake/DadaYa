@@ -9,11 +9,13 @@ import {
   Pressable,
   Image,
   Share,
+  SafeAreaView,
 } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
-import { MaterialIcons } from '@expo/vector-icons'; // 引入图标库
-
+import ActivityList from '../../components/activityList';
+import toggleButtonStyles from 'components/style/ButtonStyles'; // 引入样式文件
+import { styles } from '~/components/HeaderButton';
 export default function IndexScreen() {
   const navigation = useNavigation();
   const [user, setUser] = useState<any>(null);
@@ -34,8 +36,20 @@ export default function IndexScreen() {
       return;
     }
 
-    setUser(userData.user);
     const userId = userData.user.id;
+
+    // 获取报名成员信息（包括头像）
+    const { data: joinedData, error: joinedError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (joinedError) {
+      console.error('获取用户失败:', joinedError.message);
+    } else {
+      setUser(joinedData);
+    }
 
     // 获取用户报名的活动 ID
     const { data: attendanceData, error: attendanceError } = await supabase
@@ -100,44 +114,6 @@ export default function IndexScreen() {
     return activeTab === 'upcoming' ? dateA - dateB : dateB - dateA;
   });
 
-  // 计算活动的星期几和剩余天数
-  const getDayOfWeek = (date: string) => {
-    const day = new Date(date).getDay();
-    const daysOfWeek = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    return daysOfWeek[day];
-  };
-
-  // 计算活动的星期几和剩余天数
-  const getDayOfHour = (date: string) => {
-    const day = new Date(date).getHours();
-    return day;
-  };
-
-  const getDaysUntilEvent = (date: string) => {
-    const today = new Date();
-    const eventDate = new Date(date);
-    const timeDifference = eventDate.getTime() - today.getTime();
-    const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
-
-    // 如果是已完成的活动，返回“X天前”或不显示
-    if (daysDifference < 0 && activeTab === 'completed') {
-      return `${Math.abs(daysDifference)}天前`;
-    }
-
-    return daysDifference >= 0 ? `${daysDifference}天后` : '';
-  };
-
-  // 分享功能
-  const handleShare = async (activity: any) => {
-    try {
-      await Share.share({
-        message: `Check out this activity: ${activity.title}\nDetails: ${activity.description}`,
-      });
-    } catch (error) {
-      console.error('Error sharing activity', error);
-    }
-  };
-
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -148,13 +124,11 @@ export default function IndexScreen() {
   }
 
   return (
-    <View className="flex-1 p-4">
+    <View>
       {user ? (
         <>
-          <Text className="mb-4 text-xl font-bold">欢迎回来，{user.email}</Text>
-
           {/* 分类按钮 */}
-          <View className="mb-4 flex-row">
+          <View className="mb-4 flex-row" style={{ paddingHorizontal: 10, marginTop: 10 }}>
             <Pressable
               onPress={() => handleTabChange('upcoming')}
               style={{
@@ -185,47 +159,19 @@ export default function IndexScreen() {
               className={`rounded p-2 ${activeTab === 'completed' ? 'bg-red-500 text-white' : 'text-red bg-white'}`}>
               <Text>已完成的活动</Text>
             </Pressable>
+
+            <Pressable onPress={() => router.push(`/modal`)}>
+              <Image
+                source={{ uri: user.avatar_url }}
+                className="absolute left-20 h-12 w-12 rounded-full border-2 border-white"
+              />
+            </Pressable>
           </View>
-
           {/* 活动列表 */}
-          <FlatList
-            data={sortedActivities}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                className="mb-4 rounded-lg p-4 shadow-md"
-                onPress={() => router.push(`/activity/${item.id}`)}>
-                <Image source={{ uri: item.image_uri }} className="mb-4 h-40 w-full rounded-md" />
-                <Text className="text-xl font-semibold">{item.title}</Text>
-                <Text className="text-sm text-gray-500">
-                  {new Date(item.date).toLocaleDateString('zh-CN', {
-                    month: 'numeric',
-                  })}
-                  {new Date(item.date).toLocaleDateString('zh-CN', {
-                    day: 'numeric',
-                  })}{' '}
-                  {new Date(item.date).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}{' '}
-                  · {getDaysUntilEvent(item.date)}
-                </Text>
-
-                <Text className="text-sm text-gray-500">活动地点: {item.location}</Text>
-
-                <Pressable
-                  onPress={() => handleShare(item)}
-                  className="absolute right-5 top-5 rounded-full bg-gray-400 p-1">
-                  <MaterialIcons name="upload" size={24} color="white" />
-                </Pressable>
-                <Text className="text-sm text-gray-500"></Text>
-                <View style={{ height: 2, backgroundColor: '#e0e0e0', marginHorizontal: -16 }} />
-              </Pressable>
-            )}
-            ListEmptyComponent={
-              <Text className="mt-4 text-center text-gray-500">您还没有报名任何活动。</Text>
-            }
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          <ActivityList
+            activities={filteredActivities}
+            onSelectActivity={() => {}}
+            hideDetails={true}
           />
         </>
       ) : (
@@ -242,7 +188,7 @@ export default function IndexScreen() {
       {/* 圆形添加按钮 */}
       <Pressable
         onPress={() => navigation.navigate('createActivity/index')} // 跳转到 createActivity.tsx
-        className="absolute bottom-10 right-10 h-20 w-20 items-center justify-center rounded-full bg-red-500 shadow-lg">
+        className="absolute bottom-20 right-10 h-20 w-20 items-center justify-center rounded-full bg-red-500 shadow-lg">
         <Text className="text-6xl text-white">+</Text>
       </Pressable>
     </View>

@@ -14,9 +14,7 @@ import { Link, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
 import { uploadImageToSupabase } from '~/utils/ImageUpload';
 import { pickImage, takePhoto } from '~/components/ImagePicker';
-import RenderHtml from 'react-native-render-html';
 import { LogBox } from 'react-native';
-
 LogBox.ignoreLogs([
   'Warning: TNodeChildrenRenderer: Support for defaultProps',
   'Warning: TRenderEngineProvider: Support for defaultProps',
@@ -96,7 +94,7 @@ export default function CreateActivityScreen() {
           description: description,
           date: startDate.toISOString(),
           end_date: endDate.toISOString(),
-          location: location.address,
+          location: location.name,
           image_uri: imageUrl,
           host_id: user.id,
           longitude: long,
@@ -167,7 +165,9 @@ export default function CreateActivityScreen() {
                   justifyContent: 'space-between',
                 }}>
                 <Text className="font-bold text-gray-700">{`活动介绍`}</Text>
-                <Text className="text-blue-700">{description}...</Text>
+                <Text className="text-blue-700" numberOfLines={1} ellipsizeMode="tail">
+                  {description.length > 6 ? `${description.substring(0, 6)}...` : description}
+                </Text>
               </View>
             ) : (
               <Text className="font-bold text-gray-700">活动介绍</Text>

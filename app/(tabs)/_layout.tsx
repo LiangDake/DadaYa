@@ -14,11 +14,11 @@ export default function TabLayout() {
         options={{
           title: '主页',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
-          ),
+          // headerRight: () => (
+          //   <Link href="/modal" asChild>
+          //     <HeaderButton />
+          //   </Link>
+          // ),
         }}
       />
       <Tabs.Screen
