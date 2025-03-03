@@ -48,9 +48,9 @@ export default function AddressAutocomplete({ onSelected }) {
     setLongitude(long);
   };
 
-  // 默认的天安门经纬度
-  const defaultLatitude = 39.9042;
-  const defaultLongitude = 116.4074;
+  // 默认的西安大雁塔经纬度
+  const defaultLatitude = 34.2339;
+  const defaultLongitude = 108.948;
 
   return (
     <View>

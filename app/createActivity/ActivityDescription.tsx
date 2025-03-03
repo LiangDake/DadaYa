@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Text, View, Pressable } from 'react-native';
+import { Text, View, Pressable, TextInput } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 import { WebView } from 'react-native-webview';
@@ -34,33 +34,17 @@ const ActivityDescriptionScreen = () => {
 
   return (
     <View style={{ flex: 1, padding: 22 }}>
-      <RichEditor
-        ref={editorRef}
-        initialContentHTML={description} // 设置初始内容
-        onChange={handleEditorChange} // 监听编辑内容
-        style={{
-          minHeight: 280,
-          minWidth: 350,
-          borderRadius: 8,
-          borderColor: '#ddd',
-          backgroundColor: '#f7f7f7',
-        }}
-      />
-      <RichToolbar
-        editor={editorRef}
-        actions={[
-          actions.setBold,
-          actions.setItalic,
-          actions.insertBulletsList,
-          actions.insertOrderedList,
-          actions.setUnderline,
-        ]}
+      <TextInput
+        className="h-96 rounded-md border p-2"
+        placeholder="活动描述"
+        value={description}
+        onChangeText={setDescription}
+        multiline
       />
       <Pressable
         style={{
           marginTop: 16,
-          borderWidth: 1,
-          borderRadius: 8,
+          borderRadius: 12,
           padding: 16,
           backgroundColor: '#ff4d4d',
           alignItems: 'center',

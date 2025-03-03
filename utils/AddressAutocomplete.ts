@@ -2,8 +2,8 @@ const API_BASE_URL = 'https://restapi.amap.com/v3/place/text';
 const apiKey = 'e64f8fbf85db54ba2baa440b9d44c9e4'; // 使用你的高德 API 密钥
 
 export async function getSuggestions(input: string, session_token: string) {
-  // 构建请求 URL，添加关键词（input）和城市（默认为上海）
-  const url = `${API_BASE_URL}?key=${apiKey}&keywords=${input}&city=上海&extensions=all`;
+  // 构建请求 URL，添加关键词（input）和城市（默认为西安）
+  const url = `${API_BASE_URL}?key=${apiKey}&keywords=${input}&city=西安&extensions=all`;
 
   const response = await fetch(url);
 

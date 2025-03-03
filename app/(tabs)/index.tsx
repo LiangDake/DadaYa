@@ -197,9 +197,6 @@ export default function IndexScreen() {
                 onPress={() => router.push(`/activity/${item.id}`)}>
                 <Image source={{ uri: item.image_uri }} className="mb-4 h-40 w-full rounded-md" />
                 <Text className="text-xl font-semibold">{item.title}</Text>
-                {/* <Text className="text-sm text-gray-500">
-                  {getDayOfWeek(item.date)} · {getDaysUntilEvent(item.date)}
-                </Text> */}
                 <Text className="text-sm text-gray-500">
                   {new Date(item.date).toLocaleDateString('zh-CN', {
                     month: 'numeric',

@@ -7,16 +7,11 @@ import {
   Alert,
   ActivityIndicator,
   Pressable,
-  Platform,
   ScrollView,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Keyboard,
   Image,
 } from 'react-native';
 import { Link, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
-import AddressAutocomplete from '~/components/AddressAutocomplete';
 import { uploadImageToSupabase } from '~/utils/ImageUpload';
 import { pickImage, takePhoto } from '~/components/ImagePicker';
 import RenderHtml from 'react-native-render-html';
@@ -38,7 +33,10 @@ export default function CreateActivityScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState(null);
+
+  const [type, setType] = useState(null); // 存储选择的类型
+
   const [imageUri, setImageUri] = useState('');
 
   const [startDate, setStartDate] = useState(() => {
@@ -62,6 +60,10 @@ export default function CreateActivityScreen() {
   const handleLocationDelete = () => {
     setLocation(null); // 删除地点
   };
+  // 删除类型
+  const handleTypeDelete = () => {
+    setType(null); // 删除地点
+  };
   useEffect(() => {
     const fetchUser = async () => {
       const { data: userData, error } = await supabase.auth.getUser();
@@ -84,6 +86,7 @@ export default function CreateActivityScreen() {
       imageUrl = await uploadImageToSupabase(imageUri);
       console.log(imageUrl);
     }
+    console.log(type);
     const [long, lat] = location.location.split(',').map(parseFloat);
 
     try {
@@ -99,6 +102,7 @@ export default function CreateActivityScreen() {
           longitude: long,
           latitude: lat,
           location_point: `POINT(${long} ${lat})`,
+          type: type,
         },
       ]);
 
@@ -159,10 +163,11 @@ export default function CreateActivityScreen() {
             {description ? (
               <View
                 style={{
+                  flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
                 <Text className="font-bold text-gray-700">{`活动介绍`}</Text>
-                <RenderHtml contentWidth={1000} source={{ html: description }} />
+                <Text className="text-blue-700">{description}...</Text>
               </View>
             ) : (
               <Text className="font-bold text-gray-700">活动介绍</Text>
@@ -238,6 +243,32 @@ export default function CreateActivityScreen() {
               </View>
             ) : (
               <Text className="font-bold text-gray-700">活动地点</Text>
+            )}
+          </Pressable>
+          {/* 选择类别 */}
+          <Pressable
+            className="mb-6 rounded-md bg-gray-200 p-6"
+            onPress={() =>
+              navigation.navigate('createActivity/ActivityTypes', {
+                setType,
+              })
+            }>
+            {type ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                <Text className="font-bold text-gray-700">活动类别</Text>
+                <Text className="text-blue-700">#{type}</Text>
+                {/* 删除类别按钮 */}
+                <Pressable onPress={handleTypeDelete}>
+                  <Text style={{ color: '#ff4d4d', fontSize: 15 }}>×</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text className="font-bold text-gray-700">活动类别</Text>
             )}
           </Pressable>
         </View>

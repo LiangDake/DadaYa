@@ -29,6 +29,7 @@ const handleShare = async (activity: any) => {
   }
 };
 const ActivityList: React.FC<ActivityListProps> = ({ activities, onSelectActivity }) => {
+  console.log(activities);
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
@@ -37,8 +38,8 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onSelectActivit
   const renderItem = ({ item }: { item: Activity }) => (
     <Link href={`/activity/${item.id}`} asChild>
       <Pressable onPress={() => onSelectActivity(item.id)}>
-        <View className="mb-4 rounded-lg p-4 shadow-md">
-          <Image source={{ uri: item.image_uri }} className="mb-4 h-40 w-full rounded-md" />
+        <View className="p-4">
+          <Image source={{ uri: item.image_uri }} className="mb-4 h-60 w-full rounded-md" />
           <Text className="text-xl font-semibold">{item.title}</Text>
           <Text className="text-sm text-gray-500">{formatDate(item.date)}</Text>
           <Text className="text-sm text-gray-500">{item.location}</Text>

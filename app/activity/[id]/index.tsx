@@ -158,22 +158,25 @@ export default function ActivityDetailsScreen() {
   return (
     <View className="flex-1">
       <ScrollView className="p-4">
-        <Image source={{ uri: activity.image_uri }} className="mb-4 h-40 w-full rounded-md" />
+        <Image source={{ uri: activity.image_uri }} className="mb-4 h-60 w-full rounded-md" />
         <Text className="mb-4 text-2xl font-bold">{activity.title}</Text>
         <Text className="text-sm text-gray-500">
           {new Date(activity.date).toLocaleString()}至{new Date(activity.end_date).toLocaleString()}
         </Text>
 
-        <Link href={`/activity/${activity.id}/attendance`} className="text-lg" numberOfLines={2}>
+        <Link
+          href={`/activity/${activity.id}/attendance`}
+          className="mt-2 text-blue-500"
+          numberOfLines={2}>
           点击查看参与者
         </Link>
-        <Text className="text-gray-700">{`活动描述:`}</Text>
         <RenderHtml contentWidth={1000} source={{ html: activity.description }} />
-
+        <Text></Text>
+        <Text>活动地点: </Text>
         {/* 点击活动地点跳转到地图 */}
         {latitude && longitude && (
           <Pressable onPress={() => openMap(latitude, longitude)}>
-            <Text className="mt-2 text-blue-500">活动地点: {activity.location}</Text>
+            <Text className="mt-2 text-blue-500">{activity.location}</Text>
           </Pressable>
         )}
 

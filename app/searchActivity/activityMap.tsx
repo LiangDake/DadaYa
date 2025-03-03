@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, ActivityIndicator, Dimensions, StyleSheet, Pressable } from 'react-native';
 import MapView, { Callout, CalloutSubview, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { supabase } from '~/utils/supabase'; // 你的 Supabase 客户端
 import * as Location from 'expo-location';
-import { Image, Pressable } from 'react-native';
-import { Link, router, useNavigation } from 'expo-router';
+import { Image } from 'react-native';
+import { Link, router } from 'expo-router';
+
 const { width, height } = Dimensions.get('window');
+
 export default function ActivityMapScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [activities, setActivities] = useState<any[]>([]);
@@ -19,82 +21,89 @@ export default function ActivityMapScreen() {
   });
   const [lastRegion, setLastRegion] = useState<any>(region); // 用于保存上次的区域
 
+  // 获取当前地理位置
   useEffect(() => {
     const getCurrentLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
+        setLoading(false); // 在权限被拒绝时更新加载状态
         return;
       }
 
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currentLocation);
-      setRegion({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
+      try {
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+        setRegion({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+        setLoading(false); // 成功获取位置后更新加载状态
+      } catch (error) {
+        setErrorMsg('Error getting location');
+        setLoading(false); // 获取位置失败时更新加载状态
+      }
     };
 
     getCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    if (!location) return;
+  // 触发活动数据获取
+  const fetchActivities = async () => {
+    if (!region || !region.latitude || !region.longitude) return; // 确保有有效的区域数据
 
-    const fetchActivities = async () => {
-      try {
-        setLoading(true);
-        const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+    try {
+      setLoading(true);
+      const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
 
-        // 计算地图视图的最小和最大经纬度
-        const min_lat = latitude - latitudeDelta / 2;
-        const max_lat = latitude + latitudeDelta / 2;
-        const min_long = longitude - longitudeDelta / 2;
-        const max_long = longitude + longitudeDelta / 2;
+      // 计算地图视图的最小和最大经纬度
+      const min_lat = latitude - latitudeDelta / 2;
+      const max_lat = latitude + latitudeDelta / 2;
+      const min_long = longitude - longitudeDelta / 2;
+      const max_long = longitude + longitudeDelta / 2;
 
-        // 调用 Supabase RPC 函数，获取当前视图区域内的活动
-        const { data, error } = await supabase.rpc('coming_activities_in_view', {
-          min_lat,
-          min_long,
-          max_lat,
-          max_long,
-        });
+      // 调用 Supabase RPC 函数，获取当前视图区域内的活动
+      const { data, error } = await supabase.rpc('coming_activities_in_view', {
+        min_lat,
+        min_long,
+        max_lat,
+        max_long,
+      });
 
-        if (error) {
-          setErrorMsg('Error fetching activities');
-          console.error(error);
-        } else {
-          setActivities(data);
-        }
-      } catch (error) {
+      if (error) {
         setErrorMsg('Error fetching activities');
         console.error(error);
-      } finally {
-        setLoading(false);
+      } else {
+        setActivities(data);
       }
-    };
-
-    // 判断区域变化是否超过阈值
-    const deltaLat = Math.abs(region.latitude - lastRegion.latitude);
-    const deltaLong = Math.abs(region.longitude - lastRegion.longitude);
-
-    if (deltaLat > 0.05 || deltaLong > 0.05) {
-      fetchActivities();
-      setLastRegion(region); // 更新 lastRegion
+    } catch (error) {
+      setErrorMsg('Error fetching activities');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }, [region]);
-
-  const onRegionChange = (newRegion: any) => {
-    setRegion(newRegion);
   };
 
+  // 判断区域变化是否超过阈值
+  const onRegionChange = (newRegion: any) => {
+    const deltaLat = Math.abs(newRegion.latitude - lastRegion.latitude);
+    const deltaLong = Math.abs(newRegion.longitude - lastRegion.longitude);
+
+    if (deltaLat > 0.05 || deltaLong > 0.05) {
+      setRegion(newRegion); // 更新区域
+      setLastRegion(newRegion); // 更新上次区域
+    }
+  };
+
+  // 格式化活动时间
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
   };
 
+  // 渲染标记
   const renderMarkers = () => {
     return activities.map((activity) => {
       if (!activity.latitude || !activity.longitude) {
@@ -136,6 +145,7 @@ export default function ActivityMapScreen() {
     });
   };
 
+  // 如果正在加载
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -144,6 +154,7 @@ export default function ActivityMapScreen() {
     );
   }
 
+  // 如果出现错误
   if (errorMsg) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -154,9 +165,42 @@ export default function ActivityMapScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <MapView style={{ width, height }} region={region} onRegionChangeComplete={onRegionChange}>
+      {/* 使按钮浮动在地图上方 */}
+      <View style={styles.buttonContainer}>
+        <Pressable style={styles.button} onPress={fetchActivities}>
+          <Text style={styles.buttonText}>搜索此区域</Text>
+        </Pressable>
+      </View>
+      <MapView
+        style={{ width, height }}
+        region={region}
+        onRegionChangeComplete={onRegionChange}
+        showsUserLocation={true}>
         {renderMarkers()}
       </MapView>
     </View>
   );
 }
+
+// 按钮浮动在地图上方的样式
+const styles = StyleSheet.create({
+  buttonContainer: {
+    position: 'absolute',
+    top: 20, // 控制按钮的垂直位置
+    left: '50%', // 水平居中
+    transform: [{ translateX: -width / 6 }], // 微调居中位置
+    zIndex: 10, // 保证按钮在地图之上
+    width: width / 3, // 设置按钮宽度
+  },
+  button: {
+    backgroundColor: 'white',
+    borderRadius: 20, // 圆角边框
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontWeight: 'bold',
+  },
+});
