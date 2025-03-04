@@ -14,8 +14,6 @@ import {
 import { router, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
 import ActivityList from '../../components/activityList';
-import toggleButtonStyles from 'components/style/ButtonStyles'; // 引入样式文件
-import { styles } from '~/components/HeaderButton';
 export default function IndexScreen() {
   const navigation = useNavigation();
   const [user, setUser] = useState<any>(null);
@@ -124,7 +122,7 @@ export default function IndexScreen() {
   }
 
   return (
-    <View>
+    <View className="flex-1">
       {user ? (
         <>
           {/* 分类按钮 */}

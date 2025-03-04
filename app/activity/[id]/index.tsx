@@ -14,6 +14,7 @@ import { Link, router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { supabase } from '~/utils/supabase';
 import MapView, { Marker } from 'react-native-maps';
 import RenderHtml from 'react-native-render-html';
+import AvatarList from '~/components/AvatarList';
 export default function ActivityDetailsScreen() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -178,23 +179,9 @@ export default function ActivityDetailsScreen() {
         <Text className="text-sm text-gray-500">
           {new Date(activity.date).toLocaleString()}至{new Date(activity.end_date).toLocaleString()}
         </Text>
-        <ScrollView horizontal className="mt-4 flex-row">
-          {joinedUsers.map((user, index) =>
-            user.profiles.avatar_url ? (
-              <Pressable
-                key={user.user_id}
-                onPress={() => router.push(`/activity/${activity.id}/attendance`)}>
-                <Image
-                  source={{ uri: user.profiles.avatar_url }}
-                  className="h-12 w-12 rounded-full border-2 border-white"
-                  style={{
-                    marginLeft: index === 0 ? 0 : -10, // 负边距实现部分重叠
-                  }}
-                />
-              </Pressable>
-            ) : null
-          )}
-        </ScrollView>
+        {/* 已参与用户的头像 */}
+        <AvatarList users={joinedUsers} />
+
         <Text></Text>
         <Text>{activity.description}</Text>
 

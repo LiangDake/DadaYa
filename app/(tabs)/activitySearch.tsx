@@ -22,7 +22,7 @@ export default function ActivitySearchScreen() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [filter, setFilter] = useState('upcoming'); // 默认筛选 "即将到来"
-  const [categoryFilter, setTypeFilter] = useState('all'); // 默认筛选 "即将到来"
+  const [categoryFilter, setTypeFilter] = useState('全部'); // 默认筛选 "即将到来"
   const [searchQuery, setSearchQuery] = useState('');
   const [status, requestPermission] = Location.useForegroundPermissions();
 
@@ -95,7 +95,7 @@ export default function ActivitySearchScreen() {
     }
 
     // **3️⃣ 按活动类型筛选**
-    if (categoryFilter !== 'all') {
+    if (categoryFilter !== '全部') {
       filteredData = filteredData.filter((activity) => activity.type === categoryFilter);
     }
 
@@ -132,87 +132,82 @@ export default function ActivitySearchScreen() {
             paddingLeft: 10,
             marginBottom: 10,
           }}
-          placeholder="搜索活动"
+          placeholder="搜索活动🔍"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
+      </View>
 
-        <View>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: 'row', marginBottom: 10 }}>
-            {['upcoming', 'today', 'tomorrow', 'weekend', 'next week', 'this month'].map(
-              (btnFilter) => (
-                <Pressable
-                  key={btnFilter}
-                  onPress={() => setFilter(btnFilter)}
-                  style={{
-                    backgroundColor: filter === btnFilter ? 'red' : 'white',
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    borderRadius: 12,
-                    marginRight: 16, // 给每个按钮加上间距，防止紧贴
-                  }}>
-                  <Text
-                    style={{
-                      color: filter === btnFilter ? 'white' : 'black',
-                      fontWeight: 'bold',
-                    }}>
-                    {btnFilter === 'upcoming'
-                      ? '推荐'
-                      : btnFilter === 'today'
-                        ? '今天'
-                        : btnFilter === 'tomorrow'
-                          ? '明天'
-                          : btnFilter === 'weekend'
-                            ? '周末'
-                            : btnFilter === 'next week'
-                              ? '下周'
-                              : '本月'}
-                  </Text>
-                </Pressable>
-              )
-            )}
-          </ScrollView>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: 'row' }}>
-            {['all', '户外', '畅饮', '运动', '艺术', '电影'].map((btnFilter) => (
+      <View style={{ paddingLeft: 16 }}>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexDirection: 'row', marginBottom: 10 }}>
+          {['upcoming', 'today', 'tomorrow', 'weekend', 'next week', 'this month'].map(
+            (btnFilter) => (
               <Pressable
                 key={btnFilter}
-                onPress={() => setTypeFilter(btnFilter)}
+                onPress={() => setFilter(btnFilter)}
                 style={{
-                  backgroundColor: categoryFilter === btnFilter ? 'red' : 'white',
+                  backgroundColor: filter === btnFilter ? 'red' : 'white',
                   paddingVertical: 10,
-                  paddingHorizontal: 20,
+                  paddingHorizontal: 28,
                   borderRadius: 12,
                   marginRight: 16, // 给每个按钮加上间距，防止紧贴
                 }}>
                 <Text
                   style={{
-                    color: categoryFilter === btnFilter ? 'white' : 'black',
+                    color: filter === btnFilter ? 'white' : 'black',
                     fontWeight: 'bold',
+                    fontSize: 14,
                   }}>
-                  {btnFilter === 'all'
-                    ? '全部'
-                    : btnFilter === '户外'
-                      ? '户外'
-                      : btnFilter === '畅饮'
-                        ? '畅饮'
-                        : btnFilter === '运动'
-                          ? '运动'
-                          : btnFilter === '艺术'
-                            ? '艺术'
-                            : '电影'}
+                  {btnFilter === 'upcoming'
+                    ? '推荐'
+                    : btnFilter === 'today'
+                      ? '今天'
+                      : btnFilter === 'tomorrow'
+                        ? '明天'
+                        : btnFilter === 'weekend'
+                          ? '周末'
+                          : btnFilter === 'next week'
+                            ? '下周'
+                            : '本月'}
                 </Text>
               </Pressable>
-            ))}
-          </ScrollView>
-        </View>
+            )
+          )}
+        </ScrollView>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexDirection: 'row' }}>
+          {['全部', '户外', '畅饮', '运动', '艺术', '电影'].map((btnFilter) => (
+            <Pressable
+              key={btnFilter}
+              onPress={() => setTypeFilter(btnFilter)}
+              style={{
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                marginRight: 12,
+                alignItems: 'center', // 让文字和下划线垂直居中
+                borderBottomWidth: 2, // 统一下划线高度
+                borderBottomColor: categoryFilter === btnFilter ? 'red' : 'transparent',
+              }}>
+              <Text
+                style={{
+                  color: categoryFilter === btnFilter ? 'black' : 'gray',
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                }}>
+                {btnFilter}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        <View style={{ height: 2, backgroundColor: '#e0e0e0' }} />
       </View>
-      <View style={{ flex: 1, marginTop: 10 }}>
+      <View style={{ flex: 1 }}>
         {/* 根据当前视图模式渲染不同的组件 */}
         {viewMode === 'list' ? (
           <ActivityList activities={filteredActivities} onSelectActivity={() => {}} />
